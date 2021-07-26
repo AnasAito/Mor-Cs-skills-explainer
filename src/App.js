@@ -1,19 +1,13 @@
 import "./styles.css";
 import Graph from "./graph";
-import React, { PureComponent } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer
-} from "recharts";
+import React from "react";
+import Metric from "./metric";
 import { AreaChart, Area } from "recharts";
 import Tabs from "./tabs";
-
+import GraphMenu from "./graphMenu";
+import nodesData from "./d";
+import { useState } from "react";
+import Skills from "./skills";
 const data = [
   {
     name: "Page A",
@@ -60,13 +54,24 @@ const data = [
 ];
 
 export default function App() {
+  const [active, setActive] = useState("twins");
+  const [selected, setSelected] = useState({ id: 18, name: "sql" });
+  //const node = "visual basic";
+  console.log("node data ", nodesData[selected.name]);
+  const nodeData = nodesData[selected.name];
   return (
     <main className="flex flex-col flex-1  ">
       <header className="bg-gray-50 p-4 ">
-        <div className="container relative">
+        <div className="flex flex-row justify-between ">
           <h1 className="flex items-center flex-wrap md:text-xl mb-3">
-            <p className="font-mono font-semibold">React native</p>
+            <p className="font-mono font-semibold">
+              {selected.name.toUpperCase()}
+            </p>
           </h1>
+          <div>
+            {" "}
+            <Skills selected={selected} setSelected={setSelected} />
+          </div>
         </div>
       </header>
       <div
@@ -77,14 +82,22 @@ export default function App() {
 	"
       >
         <div className="pt-8 border-gray-100 md:col-span-7 pb-24 relative ">
-          <p className="font-mono font-semibold pb-2">Skill graph</p>
-          <Graph />
+          <div className="pb-2 flex flex-row justify-between ">
+            {" "}
+            <p className="font-mono font-semibold ">Skill graph</p>
+            <GraphMenu />
+          </div>
+
+          <Graph data={nodeData["neiGraph"]} />
         </div>
         <div className="pt-8 border-gray-100 md:col-span-5 pt-6 md:pb-24 md:pl-6 md:border-l order-first md:order-none">
           <div className="mb-5 flex justify-between ">
             <dl>
               <dt class="-mb-1 text-sm text-gray-500">Number of occurences</dt>
-              <dd class="font-semibold">1,581</dd>
+              <dd class="font-semibold">
+                {nodeData["stats"]["count_job"]}{" "}
+                <span className="text-xs text-gray-200">since 05/2021</span>
+              </dd>
             </dl>
 
             <AreaChart
@@ -120,7 +133,15 @@ export default function App() {
           </div>
           <div className="border-t pt-4 border-gray-100 bg-white">
             <p className="font-mono font-semibold pb-2">Metrics</p>
-            <Tabs />
+            <Tabs active={active} setActive={setActive} />
+            <Metric
+              active={active}
+              data={{
+                stats: nodeData["stats"],
+                twins: nodeData["twins"],
+                priority: nodeData["priority"]
+              }}
+            />
           </div>
         </div>
       </div>
